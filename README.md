@@ -43,13 +43,50 @@ All public, no API keys required:
 
 🚧 **In progress** — Building in public. Check back for updates or watch the repo.
 
+## Project Structure
+
+```
+src/
+  ingestion/          Data ingestion pipeline
+    openfema_client.py  OpenFEMA API client with pagination & caching
+    noaa_client.py      NOAA Climate Data Online API client
+    s3_upload.py        AWS S3 upload utilities
+  analysis/           Analytics modules
+    coverage_gap.py     Coverage gap model with KMeans clustering
+  forecasting/        Time-series forecasting
+    timeseries.py       SARIMAX + Prophet forecasting pipeline
+  dashboard/          Streamlit frontend
+    app.py              Interactive dashboard with Folium maps
+  api/                REST API
+    main.py             FastAPI endpoints for data, gaps & forecasts
+  config.py           Environment & path configuration
+notebooks/
+  01_exploratory_analysis.ipynb   EDA notebook
+tests/                Unit tests
+```
+
+## Quick Start
+
+```bash
+pip install -r requirements.txt
+
+# Run the dashboard
+streamlit run src/dashboard/app.py
+
+# Run the API server
+uvicorn src.api.main:app --reload
+
+# Run tests
+pytest tests/
+```
+
 ## Roadmap
 
-- [ ] Data ingestion pipeline (OpenFEMA → S3)
-- [ ] Exploratory analysis notebooks
-- [ ] Coverage gap model (claims vs. policies by geography)
-- [ ] Time-series forecasting (Prophet / statsmodels)
-- [ ] Streamlit dashboard with Folium maps
+- [x] Data ingestion pipeline (OpenFEMA → S3)
+- [x] Exploratory analysis notebooks
+- [x] Coverage gap model (claims vs. policies by geography)
+- [x] Time-series forecasting (Prophet / statsmodels)
+- [x] Streamlit dashboard with Folium maps
 - [ ] Deploy to AWS
 - [ ] Write-up / case study blog post
 
