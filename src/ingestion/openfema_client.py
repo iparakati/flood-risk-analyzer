@@ -136,18 +136,26 @@ class OpenFEMAClient:
         }
         json_key = endpoint_key_map[dataset]
 
+        max_retries = 3
+
         with httpx.Client(timeout=self.timeout) as client:
             pbar = tqdm(desc=f"Fetching {dataset}", unit=" records")
+            retries = 0
             while True:
                 url = self._build_url(dataset, skip, PAGE_SIZE, filters)
                 try:
                     resp = client.get(url)
                     resp.raise_for_status()
+                    retries = 0  # reset on success
                 except httpx.HTTPStatusError as e:
                     logger.error(f"HTTP error fetching {dataset}: {e}")
                     break
                 except httpx.RequestError as e:
-                    logger.warning(f"Request error, retrying in 5s: {e}")
+                    retries += 1
+                    if retries > max_retries:
+                        logger.error(f"Max retries exceeded fetching {dataset}: {e}")
+                        break
+                    logger.warning(f"Request error (attempt {retries}/{max_retries}), retrying in 5s: {e}")
                     time.sleep(5)
                     continue
 
